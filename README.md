@@ -1,7 +1,6 @@
-# Tuppari
+# Tuppari [![Build Status](https://secure.travis-ci.org/hakobera/tuppari.png)](http://travis-ci.org/hakobera/tuppari)
 
 This is repository contains Tuppari Command Line Interface and Node.js client library.
- [![Build Status](https://secure.travis-ci.org/hakobera/tuppari)](http://travis-ci.org/hakobera/tuppari)
 
 ## Prerequisites
 
