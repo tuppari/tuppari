@@ -27,3 +27,7 @@ npm install -g tuppari
 ## Documentation
 
 Documentation is available [here](https://github.com/hakobera/tuppari.com/wiki/index)
+
+## License
+
+The MIT License
