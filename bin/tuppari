@@ -1,3 +1,185 @@
 #!/usr/bin/env node
 
-console.log('tuppari');
+var program = require('commander'),
+    package = require('../package.json'),
+    tool = require('../cli/tool'),
+    util = require('util'),
+    fs = require('fs'),
+    path = require('path'),
+    mkdirp = require('mkdirp');
+
+/*
+ * Setup program
+ */
+
+var $HOME = (process.env.HOME || process.env.USERPROFILE) + '/.tuppari',
+    $CONFIG_FILE = $HOME + '/config.json',
+    $CREDENTIALS_FILE = $HOME + '/credentials.json';
+
+if (!tool.fileExistsSync($HOME)) {
+  mkdirp.sync($HOME, '0700');
+}
+
+program.config = tool.loadConfig($CONFIG_FILE);
+program.credentials = tool.loadConfig($CREDENTIALS_FILE);
+
+var TARGET_URL = 'targetUrl';
+
+/*
+ * Define root CLI program.
+ */
+
+program
+  .version(package.version)
+  .usage('[options] [command] [command specific arguments]');
+
+/*
+ * Set additional help message.
+ */
+program.on('--help', function() {
+  console.log('  Command Help:');
+  console.log('');
+  console.log('To show help for each command, type ');
+  console.log('');
+  console.log('    $ tuppari help [command]');
+});
+
+/*
+ * global event handler
+ */
+
+process.on('exit', function () {
+  console.log('');
+});
+
+/*
+ * Add utility function to program.
+ */
+
+program.signedUrl = tool.signedUrl(program);
+
+program.post = tool.post(program);
+
+program.get = tool.get(program);
+
+program.updateConfig = function (key, value) {
+  program.config[key] = value;
+  fs.writeFileSync($CONFIG_FILE, JSON.stringify(program.config));
+};
+
+program.updateCredentials = function (body) {
+  fs.writeFileSync($CREDENTIALS_FILE, program.prettyFormat(body));
+};
+
+program.endpoint = function (relativePath) {
+  var endpointUrl = program.config[TARGET_URL];
+  if (!endpointUrl) {
+    console.error("You must set target URL first using target command.");
+    program.abort('Usage: tuppari ' + program.commandHelpInformation('target'));
+  }
+  return endpointUrl + relativePath;
+};
+
+program.updateTargetUrl = function (uri) {
+  program.updateConfig(TARGET_URL, uri);
+};
+
+program.getTargetUrl = function () {
+  return program.config[TARGET_URL];
+};
+
+program.commandHelpInformation = function (command) {
+  var cmd, i, length;
+  for (i = 0, length = program.commands.length; i < length; ++i) {
+    if (program.commands[i].name === command) {
+      cmd = program.commands[i];
+      break;
+    }
+  }
+
+  if (cmd) {
+    var args = cmd.args.map(function (arg){
+      return arg.required
+              ? '<' + arg.name + '>'
+              : '[' + arg.name + ']';
+    }).join(' ');
+
+    var help = 'Usage: '
+            + cmd.name
+            + (cmd.options.length
+              ? ' [options]'
+              : '') + ' ' + args
+            + (cmd.description()
+              ? '\n\n' + cmd.description()
+              : '');
+
+    return help;
+  } else {
+    return util.format("'%s' is not a tuppari command", command);
+  }
+};
+
+program.prettyFormat = function (obj) {
+  if (typeof obj === 'string') {
+    obj = JSON.parse(obj);
+  }
+  return JSON.stringify(obj, null, 2);
+};
+
+program.print = function () {
+  var args = Array.prototype.slice.call(arguments, 0);
+  console.log.apply(console, args);
+};
+
+program.printJson = function (obj) {
+  var out = program.prettyFormat(obj);
+  console.log(out);
+};
+
+var DEBUG = (process.env['DEBUG'] === 'true');
+program.debug = function() {
+  if (DEBUG) {
+    var args = Array.prototype.slice.call(arguments, 0);
+    console.log.apply(console, args);
+  }
+};
+
+program.abort = function (message) {
+  console.error(message);
+  process.exit(1);
+};
+
+program.abortIfError = function (err, res, body) {
+  if (err) {
+    program.abort(util.format('Error:\n%s', util.inspect(err, true)));
+  } else if (res.statusCode !== 200) {
+    program.abort(util.format('Error: statusCode = %d\n%s', res.statusCode, program.prettyFormat(body, true)));
+  }
+};
+
+program.dir = path.resolve(program.args.shift() || '.');
+
+/*
+ * Load commands
+ */
+fs.readdirSync(__dirname + '/../cli/commands').forEach(function (filename) {
+  if (!/\.js$/.test(filename)) return;
+  var name = path.basename(filename, '.js');
+  program.debug('Load ../lib/command/%s.js', name);
+  require('../cli/commands/' + name)(program);
+});
+
+/*
+ * Set no command error handler
+ */
+
+program
+  .command('*')
+  .action(function () {
+    console.log("'%s' is not a tuppari command.", this.args[0]);
+  });
+
+/*
+ * Run
+ */
+program.parse(process.argv);
