@@ -26,7 +26,7 @@ npm install -g tuppari
 
 ## Documentation
 
-Documentation is available [here](https://github.com/hakobera/tuppari.com/wiki/index)
+Documentation is available on [Documentation Wiki](https://github.com/hakobera/tuppari/wiki)
 
 ## License
 
