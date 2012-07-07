@@ -14,8 +14,7 @@ module.exports = function (program) {
       program.post({
           path: '/applications',
           body: {
-            applicationName: appname,
-            credentials: program.credentials.id
+            applicationName: appname
           },
           authRequired: true,
           operation: 'CreateApplication'
@@ -40,8 +39,7 @@ module.exports = function (program) {
       program.post({
           path: '/applications',
           body: {
-            applicationName: appname,
-            credentials: program.credentials.id
+            applicationName: appname
           },
           authRequired: true,
           operation: 'DeleteApplication'
