@@ -48,7 +48,7 @@ exports.post = function(program) {
 
     var config =
       options.authRequired ?
-        sign.createSignedRequestConfig('POST', uri, options.operation, options.body, program.credentials.secret) :
+        sign.createSignedRequestConfig('POST', uri, options.operation, options.body, program.credentials.id, program.credentials.secret) :
         { uri: uri, json: options.body };
 
     program.debug('POST %s', uri, config);
@@ -73,10 +73,9 @@ exports.get = function (program) {
 
     var config =
       options.authRequired ?
-        buildSignedRequest('GET', uri, options.body, program.credentials.secret) :
+        sign.createSignedRequestConfig('GET', uri, options.operation, '', program.credentials.id, program.credentials.secret) :
         { uri: uri };
 
-    var config = sign.createSignedRequestConfig('GET', uri, null, program.credentials.secret);
     program.debug('GET %s', uri, config);
 
     request(config, function (err, res, body) {

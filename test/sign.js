@@ -96,7 +96,7 @@ describe('sign', function() {
     })
   })
 
-  describe('createCanonicalRequest', function () {
+  describe('createCanonicalRequest()', function () {
     it("should returns HTTPRequestMethod + '\n' + CanonicalURI + '\n' + CanonicalQueryString + '\n' + CanonicalHeaders + '\n' + SignedHeaders + '\n' + HexEncode(Hash(body))", function () {
       var method = 'POST';
       var uri = '/test';
@@ -123,7 +123,7 @@ describe('sign', function() {
     })
   })
 
-  describe('createStringToSign', function () {
+  describe('createStringToSign()', function () {
     it("should returns 'SHA256\n' + ISODateString(now) + '\n' + HexEncode(Hash(canonicalRequest))", function () {
       var canonicalRequest =
         'POST\n' +
@@ -148,7 +148,7 @@ describe('sign', function() {
     })
   })
 
-  describe('createSignature', function () {
+  describe('createSignature()', function () {
     it('should returns the same signature signed with the same secret key', function() {
       var secretKey = 'secretKey1';
       var stringToSign =
@@ -169,9 +169,9 @@ describe('sign', function() {
         result.should.eql(expectedSignature);
       }
     })
-  });
+  })
 
-  describe('createSignature', function () {
+  describe('createSignature()', function () {
     it('should returns the different signature signed with the different secret key', function() {
       var secretKey1 = 'secretKey1';
       var secretKey2 = 'secretKey2';
@@ -193,6 +193,59 @@ describe('sign', function() {
 
       result1.should.not.eql(result2);
     })
-  });
+  })
+
+  describe('createSignedRequestConfig()', function () {
+    it('should returns authorizationHeader', function () {
+      var now = new Date();
+
+      var method = 'POST';
+      var uri = 'http://api.tuppari.com/test?a=v1&b=v2';
+      var operation = 'CreateApplication';
+      var body = JSON.stringify({
+        "applicationName": "example1"
+      });
+      var accessKeyId = 'accessKeyId';
+      var accessSecretKey = 'accessSecretKey';
+
+      var clock = sinon.useFakeTimers();
+      var config = sign.createSignedRequestConfig(method, uri, operation, body, accessKeyId, accessSecretKey);
+      clock.restore();
+
+      config.uri.should.eql(uri);
+      config.body.should.eql(JSON.stringify(body));
+      config.headers['Host'].should.eql('api.tuppari.com');
+      config.headers['Content-Type'].should.eql('application/json');
+      config.headers['X-Tuppari-Date'].should.eql('Thu, 01 Jan 1970 00:00:00 GMT');
+      config.headers['X-Tuppari-Operation'].should.eql('CreateApplication');
+      config.headers['Authorization'].should.eql('HMAC-SHA256 Credential=accessKeyId,SignedHeaders=content-type;host;x-tuppari-date;x-tuppari-operation,Signature=f35767c9fdba4ba5d5bbbf1c622fceed0dbaeb210303bb56b419c6a51bcf1e5d');
+    })
+  })
+
+  describe('createAuthorizationHeader()', function () {
+    it('should returns algorithm name and calculated authorization values', function () {
+      var clock = sinon.useFakeTimers();
+      var now = new Date();
+      clock.restore();
+
+      var method = 'POST';
+      var hostname = 'api.tuppari.com';
+      var path = '/test';
+      var query = 'a=v1&b=v2';
+      var headers = {
+        "Host": "api.tuppari.com",
+        "Content-type": "application/json",
+        "X-Tuppari-Operation": "CreateApplication"
+      };
+      var body = JSON.stringify({
+        "applicationName": "example1"
+      });
+      var accessKeyId = 'accessKeyId';
+      var accessSecretKey = 'accessSecretKey';
+
+      var authorization = sign.createAuthorizationHeader(method, hostname, path, query, headers, body, now, accessKeyId, accessSecretKey);
+      authorization.should.eql('HMAC-SHA256 Credential=accessKeyId,SignedHeaders=content-type;host;x-tuppari-operation,Signature=050f8711271747d4f63a3caa3ffb420e4cd5a0e9d9dda8ba7e4faad6794c40d0');
+    })
+  })
 
 })
