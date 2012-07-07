@@ -11,7 +11,8 @@
   },
   "devDependencies": {
     "mocha": "*",
-    "should": "*"
+    "should": "*",
+    "sinon": "*"
   },
   "keyword": [ "tuppari", "WebSocket", "aws" ],
   "repository": "git://github.com/hakobera/tuppari",

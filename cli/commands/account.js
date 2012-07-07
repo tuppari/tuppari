@@ -10,11 +10,13 @@ module.exports = function (program) {
     .action(function (accountName) {
       program.password('Password: ', '*', function (passwd) {
         program.print('');
-        program.post(
-          '/accounts/register',
-          {
-            accountName: accountName,
-            password: passwd
+        program.post({
+            path: '/accounts/register',
+            body: {
+              accountName: accountName,
+              password: passwd
+            },
+            operation: 'CreateAccount'
           },
           function (res, body) {
             program.print('Create a new account name "%s" success.', accountName);
@@ -34,11 +36,13 @@ module.exports = function (program) {
       program.prompt('Account Name: ', function (accountName) {
         program.password('Password: ', '*', function(passwd){
           program.print('');
-          program.post(
-            '/accounts/auth',
-            {
-              accountName: accountName,
-              password: passwd
+          program.post({
+              path: '/accounts/auth',
+              body: {
+                accountName: accountName,
+                password: passwd
+              },
+              operation: 'GetAccountCredentials'
             },
             function (res, body) {
               program.updateCredentials(body.credentials);

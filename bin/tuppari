@@ -56,8 +56,6 @@ process.on('exit', function () {
  * Add utility function to program.
  */
 
-program.signedUrl = tool.signedUrl(program);
-
 program.post = tool.post(program);
 
 program.get = tool.get(program);

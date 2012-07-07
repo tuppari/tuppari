@@ -1,9 +1,11 @@
 var fs = require('fs'),
-    path = require('path'),
-    qs = require('querystring'),
-    request = require('request'),
-    crypto = require('crypto'),
-    util = require('util');
+  path = require('path'),
+  qs = require('querystring'),
+  request = require('request'),
+  crypto = require('crypto'),
+  util = require('util'),
+  Tuppari = require('../lib/tuppari'),
+  sign = require('../lib/sign');
 
 /*
  * path.{exists,existsSync} was moved to fs.{exists,existsSync} at Node.js v0.8
@@ -38,45 +40,20 @@ exports.loadConfig = function (configFile) {
 };
 
 /**
- * Make signed URL
- *
- * @param {String} method HTTP method (GET|POST)
- * @param {String} path Relative path to request
- * @param {Object} obj POST body. if method is not 'POST', this parameter is ignored.
- * @return {String} Signed URL
- */
-exports.signedUrl = function (program) {
-  return function (method, path, obj) {
-    var params = {
-      public_key: program.credentials.id,
-      auth_timestamp: parseInt(new Date().getTime() / 1000),
-      auth_version: '1.0'
-    };
-
-    if (method === 'POST') {
-      params.body_hash = crypto.createHash('md5').update(JSON.stringify(obj), 'utf8').digest('hex');
-    }
-
-    var queryString = qs.stringify(params);
-    var signData = [ method, path, queryString ].join('\n');
-    var signature = crypto.createHmac('sha256', program.credentials.secret).update(signData).digest('hex');
-
-    return util.format('%s?%s&auth_signature=%s', path, queryString, signature);
-  };
-};
-
-/**
  * POST request
  */
 exports.post = function(program) {
-  return function(path, body, callback) {
-    var uri = program.endpoint(path);
-    program.debug('POST %s', uri);
+  return function(options, callback) {
+    var uri = program.endpoint(options.path);
 
-    request.post({
-      uri: uri,
-      json: body
-    }, function (err, res, body) {
+    var config =
+      options.authRequired ?
+        sign.createSignedRequestConfig('POST', uri, options.operation, options.body, program.credentials.secret) :
+        { uri: uri, json: options.body };
+
+    program.debug('POST %s', uri, config);
+
+    request.post(config, function (err, res, body) {
       program.abortIfError(err, res, body);
       program.debug('response:\n%s', program.prettyFormat(body));
       if (callback) {
@@ -88,16 +65,21 @@ exports.post = function(program) {
 };
 
 /**
- * Make GET request
+ * GET request
  */
 exports.get = function (program) {
-  return function(path, callback) {
-    var uri = program.endpoint(path);
-    program.debug('GET %s', uri);
+  return function(options, callback) {
+    var uri = program.endpoint(options.path);
 
-    request({
-      uri: uri
-    }, function (err, res, body) {
+    var config =
+      options.authRequired ?
+        buildSignedRequest('GET', uri, options.body, program.credentials.secret) :
+        { uri: uri };
+
+    var config = sign.createSignedRequestConfig('GET', uri, null, program.credentials.secret);
+    program.debug('GET %s', uri, config);
+
+    request(config, function (err, res, body) {
       program.abortIfError(err, res, body);
       program.debug('response:\n%s', program.prettyFormat(body));
       if (callback) {

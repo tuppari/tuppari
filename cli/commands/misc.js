@@ -8,7 +8,7 @@ module.exports = function (program) {
     .command('info')
     .description('  Show target server information')
     .action(function () {
-      program.get('/info', function (res, body) {
+      program.get({ path: '/info' }, function (res, body) {
         program.print('url: %s', program.getTargetUrl());
         program.print('information:');
         program.printJson(body);
