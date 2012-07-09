@@ -5,10 +5,10 @@ console.log(process.argv);
 var args = process.argv.slice(2);
 
 var tuppari = new Tuppari({
-  host: args[0], 
-  applicationId: "fd34f220-b89c-11e1-bafa-81bacb04e21a",
-  accessKeyId: "778e1721-0c9e-4aa3-9c5a-a7e8c03fa936",
-  accessSecretKey: "6f7dc6fb-e052-469a-9b6d-1d19dac8c088"
+  host: 'http://localhost:5100',
+  applicationId: "d7c47280-c9cd-11e1-bab6-67a886786455",
+  accessKeyId: "d7cb0230-c9cd-11e1-bab6-67a886786455",
+  accessSecretKey: "d7cb0231-c9cd-11e1-bab6-67a886786455"
 });
 
 tuppari.on('log', function (eventType) {
@@ -22,9 +22,9 @@ channel.on('log', function (eventType) {
   console.log(eventType, args);
 });
 
-channel.send('your_event', { message: args[1] }, function (err, res, body) {
+channel.send('your_event', args[0], function (err, res, body) {
   if (err) {
     console.error(err);
   }
-  console.log(body);
+  console.log(res.statusCode, body);
 });
