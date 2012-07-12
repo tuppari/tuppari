@@ -6,7 +6,7 @@ This is repository contains Tuppari Command Line Interface and Node.js client li
 
 ## Prerequisites
 
-* [Node.js](http://nodejs.org/) (>= 0.6.0)
+* [Node.js](http://nodejs.org/) (>= 0.6.13)
 * gcc
     * If you are using Mac OS X and XCode 4.3+, you'll need to [Command Line Tools for XCode](https://developer.apple.com/downloads).
 
