@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Example | Tuppari</title>
+  <script src="tuppari-0.1.0.js"></script>
+  <!-- 1. Include the Tuppari client JavaScript libraries on your page from CDN -->
+  <script>
+    // 2. Instantiate connection object to tuppari server.
+    var client = tuppari.createClient({
+      applicationId: '36b44010-cc2e-11e1-82b9-2926e87765ad', // Replace this with your Application ID
+      url: 'http://ws.tuppari.com'
+    });
+    client.on('log', function () {
+      var args = Array.prototype.slice.call(arguments, 0);
+      console.log.apply(console, args);
+    });
+    // 3. Create channel you want to use.
+    var channel = client.subscribe('your_channel');
+    // 4. Listen for some events on you channel
+    channel.bind('your_event', function (data) {
+      document.getElementById('message').innerText = data;
+    });
+  </script>
+</head>
+<body>
+  <h1>Tuppari Example</h1>
+  Date.now() is pushed once a second : <span id="message"></span>
+</body>
+</html>
