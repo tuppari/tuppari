@@ -14,13 +14,13 @@ var fs = require('fs'),
  */
 
 exports.fileExists = (function () {
-  if (path.exists) return path.exists;
-  else return fs.exists;
+  if (fs.exists) return fs.exists;
+  else return path.exists;
 })();
 
 exports.fileExistsSync = (function () {
-  if (path.existsSync) return path.existsSync;
-  else return fs.existsSync;
+  if (fs.existsSync) return fs.existsSync;
+  else return path.existsSync;
 })();
 
 /**
