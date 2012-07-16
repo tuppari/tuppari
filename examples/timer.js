@@ -5,7 +5,7 @@ console.log(process.argv);
 var args = process.argv.slice(2);
 
 var tuppari = new Tuppari({
-  host: 'https://api.tuppari.com',
+  host: 'https://api.tuppari.com', // You can change this to your own host
   applicationId: 'your_application_id',
   accessKeyId: 'your_access_key_id',
   accessSecretKey: 'your_access_secret_key'
@@ -22,9 +22,11 @@ channel.on('log', function (eventType) {
   console.log(eventType, args);
 });
 
-channel.send('your_event', args[0], function (err, res, body) {
-  if (err) {
-    console.error(err);
-  }
-  console.log(res.statusCode, body);
-});
+setInterval(function () {
+  channel.send('your_event', Date.now(), function (err, res, body) {
+    if (err) {
+      console.error(err);
+    }
+    console.log(res.statusCode, body);
+  });
+}, 1000);

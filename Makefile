@@ -5,4 +5,7 @@ test:
 					--reporter ${REPORTER} \
 					--require should
 
-.PHONY: test
+minify:
+	uglifyjs -o ./client/tuppari.min.js ./client/tuppari.js
+
+.PHONY: test minify

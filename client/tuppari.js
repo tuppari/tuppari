@@ -20,7 +20,7 @@
    */
   var EVENT_BIND = 'bind';
 
-    /*
+  /*
    * EventEmitter taken from Node.js core module.
    */
   function EventEmitter() {
@@ -229,8 +229,8 @@
     self.url = url;
     self.ws = null;
     self.connected = false;
-    self.timer = null;
-    self.heartbeatIntarvel = 10000;
+    self.healthcheckInterval = 20000;
+    self.healthcheckTimer = null;
 
     self.on('open', function (ws) {
       self.connected = true;
@@ -240,6 +240,9 @@
 
     self.on('close', function (event) {
       self.connected = false;
+      if (self.ws) {
+        self.ws.close();
+      }
       self.ws = null;
       self.emit('disconnect', event);
     });
@@ -249,20 +252,20 @@
   /**
    * Connect to broadcast server specified by apiKey.
    */
-  Socket.prototype.connect = function () {
+  Socket.prototype.open = function () {
     var self = this;
     self.close();
 
-    self.timer = setInterval(function () {
+    self.healthcheckTimer = setInterval(function () {
       if (self.ws === null || self.ws.readyState > 1/*OPEN*/) {
-        self.connect();
+        self.open();
       }
-    }, self.heartbeatIntarvel);
+    }, self.healthcheckInterval);
 
-    self._connect();
+    self._open();
   };
 
-  Socket.prototype._connect = function () {
+  Socket.prototype._open = function () {
     var self = this;
 
     GET(self.url + '/endpoint', function (err, xhr) {
@@ -318,33 +321,32 @@
     command.event = event;
     command.data = data;
 
-    if (self.ws) {
-      self.ws.send(command);
-    } else {
-      setTimeout(function _send() {
-        if (self.ws) {
-          self.ws.send(JSON.stringify(command));
-        } else {
-          setTimeout(_send, 200);
-        }
-      }, 0);
+    function _send() {
+      if (self.ws) {
+        var ret = self.ws.send(JSON.stringify(command));
+        self.emit('send', ret, self.ws, command);
+      } else {
+        setTimeout(_send, 100);
+      }
     }
-  };
+    _send();
+};
 
   /**
    * Close socket if connected.
    */
   Socket.prototype.close = function () {
+    this.connected = false;
+
+    if (this.healthcheckTimer) {
+      clearInterval(this.healthcheckTimer);
+      this.healthcheckTimer = null;
+    }
+
     if (this.ws) {
       this.ws.close();
+      this.ws = null;
     }
-
-    if (this.timer) {
-      clearInterval(this.timer);
-    }
-
-    this.ws = null;
-    this.connected = false;
   };
 
   /**
@@ -378,9 +380,9 @@
    * @param {Object} message message data
    */
   Channel.prototype.emit = function (eventName, message) {
-    var handler = this.events[eventName];
-    if (handler) {
-      handler(message);
+    var handle = this.events[eventName];
+    if (handle) {
+      handle(message);
     }
   };
 
@@ -390,14 +392,12 @@
    * @private
    */
   Channel.prototype._rebind = function () {
-    var self = this,
-      ea = self.events,
-      k, eventCallback;
+    var events = this.events,
+        eventName;
 
-    for (k in ea) {
-      if (ea.hasOwnProperty(k)) {
-        eventCallback = ea[k];
-        self.on(k, eventCallback);
+    for (eventName in events) {
+      if (events.hasOwnProperty(eventName)) {
+        this.client.bind(this.name, eventName);
       }
     }
   };
@@ -418,9 +418,24 @@
     self.connected = false;
     self.channels = {};
     self.socket = new Socket(self.applicationId, self.url);
+    self.firstConnect = true;
 
     self.socket.on('connect', function () {
       self.emit('log', 'connected');
+
+      if (self.firstConnect) {
+        self.firstConnect = false;
+      } else {
+        var channels = self.channels,
+            k, c;
+
+        for (k in channels) {
+          if (channels.hasOwnProperty(k)) {
+            c = channels[k];
+            c._rebind();
+          }
+        }
+      }
     });
 
     self.socket.on('disconnect', function (event) {
@@ -434,11 +449,15 @@
       }
     });
 
+    self.socket.on('send', function (ret, ws, command) {
+      self.emit('log', 'send', ret, ws, command);
+    });
+
     self.socket.on('error', function (event) {
       self.emit('error', event);
     });
 
-    self.socket.connect();
+    self.connect();
   }
   inherits(Client, EventEmitter);
 
@@ -449,9 +468,8 @@
    * @return {Channel} Channel instance
    */
   Client.prototype.subscribe = function (channelName) {
-    var self = this;
-    var channel = new Channel(self, channelName);
-    self.channels[channelName] = channel;
+    var channel = new Channel(this, channelName);
+    this.channels[channelName] = channel;
     return channel;
   };
 
@@ -462,12 +480,25 @@
    * @param {String} eventName
    */
   Client.prototype.bind = function (channelName, eventName) {
-    var self = this;
     var data = {
       channelName: channelName,
       eventName: eventName
     };
-    self.socket.send(EVENT_BIND, data);
+    this.socket.send(EVENT_BIND, data);
+  };
+
+  /**
+   * Connect to WebSocket server.
+   */
+  Client.prototype.connect = function () {
+    this.socket.open();
+  };
+
+  /**
+   * Disconnect from WebSocket server.
+   */
+  Client.prototype.disconnect = function () {
+    this.socket.close();
   };
 
   /*
