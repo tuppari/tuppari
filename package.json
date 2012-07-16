@@ -4,10 +4,10 @@
   "version": "0.1.0",
   "author": "Kazuyuki Honda <hakobera@gmail.com>",
   "dependencies": {
-    "commander": "0.6.1",
+    "commander": "1.0.0",
     "request": "2.9.202",
     "mkdirp": "0.3.3",
-    "cli-table": "0.0.2"
+    "keypress": "0.0.2"
   },
   "devDependencies": {
     "mocha": "*",

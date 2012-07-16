@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+require('../cli/patch');
+
 var program = require('commander'),
     package = require('../package.json'),
     tool = require('../cli/tool'),
