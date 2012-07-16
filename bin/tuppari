@@ -25,7 +25,7 @@ if (!tool.fileExistsSync($HOME)) {
 program.config = tool.loadConfig($CONFIG_FILE);
 program.credentials = tool.loadConfig($CREDENTIALS_FILE);
 
-var TARGET_URL = 'targetUrl';
+var TARGET_URL_KEY = 'targetUrl';
 
 /*
  * Define root CLI program.
@@ -72,20 +72,20 @@ program.updateCredentials = function (body) {
 };
 
 program.endpoint = function (relativePath) {
-  var endpointUrl = program.config[TARGET_URL];
+  var endpointUrl = program.getTargetUrl();
   if (!endpointUrl) {
-    console.error("You must set target URL first using target command.");
+    console.error("You must set target URL using target command.");
     program.abort('Usage: tuppari ' + program.commandHelpInformation('target'));
   }
   return endpointUrl + relativePath;
 };
 
 program.updateTargetUrl = function (uri) {
-  program.updateConfig(TARGET_URL, uri);
+  program.updateConfig(TARGET_URL_KEY, uri);
 };
 
 program.getTargetUrl = function () {
-  return program.config[TARGET_URL];
+  return program.config[TARGET_URL_KEY];
 };
 
 program.commandHelpInformation = function (command) {
@@ -178,6 +178,10 @@ program
   .action(function () {
     console.log("'%s' is not a tuppari command.", this.args[0]);
   });
+
+if (!program.getTargetUrl()) {
+  program.updateTargetUrl('https://api.tuppari.com');
+}
 
 /*
  * Run
