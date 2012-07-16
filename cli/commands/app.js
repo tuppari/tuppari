@@ -52,4 +52,27 @@ module.exports = function (program) {
       );
     });
 
+  program
+    .command('list')
+    .description('  List owned applications')
+    .action(function () {
+      if (!program.credentials.id) {
+        program.print('You must login to delete any application');
+        return;
+      }
+
+      program.post({
+          path: '/applications',
+          body: {},
+          authRequired: true,
+          operation: 'ListApplication'
+        },
+        function (res, body) {
+          var apps = JSON.parse(body);
+          program.print('You have %d applications', Object.keys(apps).length);
+          program.printJson(body);
+        }
+      );
+    });
+
 };
