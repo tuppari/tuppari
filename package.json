@@ -1,7 +1,7 @@
 {
   "name": "tuppari",
   "description": "The client library for Tuppari (= experimental implimentation of unbreakable message broadcasting system using WebSocket and Amazon Web Services)",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Kazuyuki Honda <hakobera@gmail.com>",
   "dependencies": {
     "commander": "1.0.0",
