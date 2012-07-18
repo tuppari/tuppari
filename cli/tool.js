@@ -32,7 +32,7 @@ exports.fileExistsSync = (function () {
 exports.loadConfig = function (configFile) {
   if (!exports.fileExistsSync(configFile)) {
     fs.writeFileSync(configFile, '{}');
-    fs.lchmodSync(configFile, 0600);
+    fs.chmodSync(configFile, 0600);
   }
 
   var content = fs.readFileSync(configFile);
