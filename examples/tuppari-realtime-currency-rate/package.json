@@ -1,0 +1,14 @@
+{
+  "name": "tuppari-realtime-currency-rate",
+  "version": "0.1.0",
+  "dependencies": {
+    "tuppari": "0.1.0",
+    "request": "~2.9.203",
+    "async": "~0.1.22",
+    "node-static": "~0.6.0"
+  },
+  "engines": {
+    "node": "0.8.x",
+    "npm": "1.1.x"
+  }
+}

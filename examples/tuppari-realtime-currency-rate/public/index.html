@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1/>
+  <meta name="format-detection" content="telephone=no"/>
+  <title>Realtime Currency Rate | Tuppari Demos</title>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0.beta6/handlebars.min.js"></script>
+  <!-- 1. Include the Tuppari client JavaScript libraries on your page from CDN -->
+  <!-- <script src="http://cdn.tuppari.com/0.1.0/tuppari.js"></script> -->
+  <script src="http://cdn.tuppari.com/0.1.0/tuppari.min.js"></script>
+  <script>
+    $(function() {
+      var client, channel, source, template;
+      var currencyTableContainer = $('#currencyTableContainer');
+
+      // 2. Instantiate connection object to tuppari server.
+      client = tuppari.createClient({
+          applicationId: 'b2882068-0055-41fe-8e02-0fe3b75a104e' // Replace this with your Application ID.
+      });
+      // 3. Create channel you want to use.
+      channel = client.subscribe('currency');
+      // 4. Listen for some events on you channel
+      channel.bind('update', function (data) {
+        var currencyRates = JSON.parse(data);
+        var html = template({ currencyRates: currencyRates });
+        $('#currencyTableContainer').html(html);
+      });
+
+      source = $("#currencyTableTemplate").html();
+      template = Handlebars.compile(source);
+    });
+  </script>
+  <style>
+    body { margin: 0; padding: 5px; font-size: 14px; }
+    #currencyTableContainer { width: 200px; padding: 5px; color: #eee; background-color: #333; }
+    #currencyTableContainer table { width: 100%; border-collapse: collapse; }
+    #currencyTableContainer table th { padding: 2px 4px; border: 1px solid #fff; text-align: center; }
+    #currencyTableContainer table td { padding: 2px 4px; border: 1px solid #fff; text-align: right; }
+  </style>
+</head>
+<body>
+  <div id="currencyTableContainer">Loading...</div>
+  <p>Update interval is 5 seconds</p>
+
+<script id="currencyTableTemplate" type="text/x-handlebars-template">
+<table>
+  <thead>
+    <tr>
+      <th>Currency Pair</th>
+      <th>Rate</th>
+    </tr>
+  </thead>
+  <tbody>
+  {{#each currencyRates}}
+    <tr>
+      <td>{{from}}/{{to}}</td>
+      <td>{{rate}}</td>
+    </tr>
+  {{/each}}
+  </tbody>
+</table>
+</script>
+</body>
+</html>
