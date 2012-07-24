@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Tuppari by hakobera</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Tuppari</h1>
+          <h2>The client library for Tuppari (= experimental implimentation of unbreakable message broadcasting system using WebSocket and Amazon Web Services)</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/hakobera/tuppari/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/hakobera/tuppari/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/hakobera/tuppari" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h1>Tuppari</h1>
+
+<p>This is repository contains Tuppari Command Line Interface and Node.js client library.</p>
+
+<h2>Prerequisites</h2>
+
+<ul>
+<li>Node.js (&gt;= 0.6.13)</li>
+<li>NPM</li>
+<li>gcc
+
+<ul>
+<li>If you are using Mac OS X and XCode 4.3+, you'll need to <a href="https://developer.apple.com/downloads">Command Line Tools for XCode</a>.</li>
+</ul>
+</li>
+<li>Browser that supports WebSocket
+
+<ul>
+<li>Google Chrome (&gt;= 14)</li>
+<li>FireFox (&gt;= 5)</li>
+<li>IE (&gt;= 10)</li>
+</ul>
+</li>
+</ul><h2>Installation</h2>
+
+<h3>Install Tuppari Command Line Interface</h3>
+
+<p>First, you should install Tuppari CLI, with npm do:</p>
+
+<pre><code>npm install -g tuppari
+</code></pre>
+
+<h3>Create account</h3>
+
+<p>If you don't have tuppari account, you should create a new account.
+To create a account, use register command.</p>
+
+<pre><code>tuppari register [YOUR_ACCOUNT_NAME]
+Password: [ENTER YOUR PASSWORD]
+
+Create new account name "[YOUR_ACCOUNT_NAME]" success.
+</code></pre>
+
+<p>Account name should only include lower and uppercase letters, numbers and the following signs <code>_ - @ .</code>
+Account name must be unique in this service, so you cannot regist the account name if someone is already registed same account name.</p>
+
+<h2>Quick start</h2>
+
+<h3>Login</h3>
+
+<pre><code>tuppari login
+Account Name: [ENTER_YOUR_ACCOUNT_NAME]
+Password: [ENTER_YOUR_PASSWORD]
+
+Login success.
+</code></pre>
+
+<h3>Create new application</h3>
+
+<pre><code>tuppari create [YOUR_APPLICATION_NAME]
+
+Create a new application named "[YOUR_APPLICATION_NAME]" success.
+Following is the application Information to access from your code.
+{
+  "applicationId": "[SHOW_YOUR_APPLICATION_ID]",
+  "accessKeyId": "[SHOW_YOUR_ACCESS_KEY_ID]",
+  "accessSercretKey": "[SHOW_YOUR_ACCESS_SECRET_KEY]"
+}
+</code></pre>
+
+<p>Make a note of application information.</p>
+
+<h3>Create client</h3>
+
+<div class="highlight"><pre><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+  <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"utf-8"</span><span class="nt">/&gt;</span>
+  <span class="c">&lt;!-- 1. Include the Tuppari client JavaScript libraries on your page from CDN --&gt;</span>
+  <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"http://cdn.tuppari.com/0.1.0/tuppari.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+  <span class="nt">&lt;script&gt;</span>
+    <span class="c1">// 2. Instantiate connection object to tuppari server. </span>
+    <span class="kd">var</span> <span class="nx">client</span> <span class="o">=</span> <span class="nx">tuppari</span><span class="p">.</span><span class="nx">createClient</span><span class="p">({</span>
+        <span class="nx">applicationId</span><span class="o">:</span> <span class="s1">'YOUR_APPLICATION_ID'</span> <span class="c1">// Replace this with your Application ID.</span>
+    <span class="p">});</span>
+    <span class="c1">// 3. Create channel you want to use.</span>
+    <span class="kd">var</span> <span class="nx">channel</span> <span class="o">=</span> <span class="nx">client</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="s1">'your_channel'</span><span class="p">);</span>
+    <span class="c1">// 4. Listen for some events on you channel</span>
+    <span class="nx">channel</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">'your_event'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'An event was triggered with message: %s'</span><span class="p">,</span> <span class="nx">data</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="nt">&lt;/script&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</pre></div>
+
+<h3>Trigger events from your Node.js code</h3>
+
+<p>Create package.json and app.js like below.</p>
+
+<h4>package.json</h4>
+
+<div class="highlight"><pre><span class="p">{</span>
+  <span class="nt">"name"</span><span class="p">:</span> <span class="s2">"helloworld"</span><span class="p">,</span>
+  <span class="nt">"version"</span><span class="p">:</span> <span class="s2">"0.1.0"</span><span class="p">,</span>
+  <span class="nt">"dependencies"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">"tuppari"</span><span class="p">:</span> <span class="s2">"0.1.0"</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+<h4>app.js</h4>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Tuppari</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'tuppari'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">tuppari</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Tuppari</span><span class="p">({</span>
+  <span class="nx">applicationId</span><span class="o">:</span> <span class="s1">'YOUR APPLICATION ID'</span><span class="p">,</span>
+  <span class="nx">accessKeyId</span><span class="o">:</span> <span class="s1">'YOUR ACCESS KEY ID'</span><span class="p">,</span>
+  <span class="nx">accessSecretKey</span><span class="o">:</span> <span class="s1">'YOUR ACCESS SECRET KEY'</span>
+<span class="p">});</span>
+
+<span class="kd">var</span> <span class="nx">channel</span> <span class="o">=</span> <span class="nx">tuppari</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">'your_channel'</span><span class="p">);</span>
+
+<span class="nx">channel</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s1">'your_event'</span><span class="p">,</span> <span class="s1">'hello world'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">,</span> <span class="nx">body</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>After create files, then type following commands to publish message from your code.</p>
+
+<pre><code>cd [YOUR_WORKING_DIRECTORY]
+npm install
+node app.js
+</code></pre>
+
+<p>Check the browser's console, you can see the message below.</p>
+
+<pre><code>An event was triggered with message: hello world
+</code></pre>
+
+<h1>Technology Overview</h1>
+
+<h2>Server module</h2>
+
+<p>See <a href="https://github.com/hakobera/tuppari-servers">Tuppari Servers</a> and it's <a href="https://github.com/hakobera/tuppari-servers/wiki">document</a>.</p>
+
+<h2>Infrastructure</h2>
+
+<p><img src="https://cacoo.com/diagrams/1fKhpMubP7teRHxr-C00D6.png" alt="Infrastructure Overview"></p>
+
+<h1>Contacts</h1>
+
+<p>If you have any question, contact <a href="https://twitter.com/hakobera">me</a> via twitter.</p>
+
+<h2>License</h2>
+
+<p>The MIT License</p>
+        </section>
+
+        <footer>
+          Tuppari is maintained by <a href="https://github.com/hakobera">hakobera</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
+    </div>
+  </body>
+</html>
