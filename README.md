@@ -28,6 +28,11 @@ npm install -g tuppari
 
 Documentation is available on [Documentation Wiki](https://github.com/hakobera/tuppari/wiki)
 
+## Demos
+
+* [Realtime Currency Rate](http://tuppari-realtime-currency-demo.herokuapp.com/)
+* [Tuiter + GMaps example](http://afternoon-stone-9638.herokuapp.com/)
+
 ## License
 
 The MIT License

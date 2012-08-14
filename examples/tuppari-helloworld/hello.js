@@ -1,4 +1,4 @@
-var Tuppari = require('../.');
+var Tuppari = require('../');
 
 console.log(process.argv);
 
