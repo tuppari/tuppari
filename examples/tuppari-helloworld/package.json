@@ -1,0 +1,7 @@
+{
+  "name": "tuppari-helloworld",
+  "version": "0.1.0",
+  "dependencies": {
+    "tuppari": "0.1.1"
+  }
+}

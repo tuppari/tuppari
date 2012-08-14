@@ -9,7 +9,13 @@
   <script src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0.beta6/handlebars.min.js"></script>
   <!-- 1. Include the Tuppari client JavaScript libraries on your page from CDN -->
   <!-- <script src="http://cdn.tuppari.com/0.1.0/tuppari.js"></script> -->
-  <script src="http://cdn.tuppari.com/0.1.0/tuppari.min.js"></script>
+  <script src="http://cdn.tuppari.com/0.2.0/tuppari.min.js"></script>
+  <!-- If you want to support IE6, 7, 8, 9 include script for flash sockt -->
+  <!--[if lte IE 9]>
+  <script src="http://cdn.tuppari.com/flashsocket/swfobject.js"></script>
+  <script src="http://cdn.tuppari.com/flashsocket/web_socket.js"></script>
+  <script src="http://cdn.tuppari.com/flashsocket/json2.js"></script>
+  <!endif-->
   <script>
     $(function() {
       var client, channel, source, template;

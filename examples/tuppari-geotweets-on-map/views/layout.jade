@@ -4,9 +4,12 @@ html
     meta(charset="utf8")
     title Tuiter + GMaps example | Tuppari Demos
     link(rel='stylesheet', href='/styles/style.css')
+    script(src="http://cdn.tuppari.com/0.2.0/tuppari.min.js")
+    script(src="http://cdn.tuppari.com/flashsocket/swfobject.js")
+    script(src="http://cdn.tuppari.com/flashsocket/web_socket.js")
+    script(src="http://cdn.tuppari.com/flashsocket/json2.js")
   body
-    block content
-    script(src="http://cdn.tuppari.com/0.1.0/tuppari.js")
     script(src="https://maps.google.com/maps/api/js?sensor=false")
     script(src="/js/jquery.min.js")
     script(src="/js/map.js")
+    block content

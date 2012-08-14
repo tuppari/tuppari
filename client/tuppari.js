@@ -1,5 +1,5 @@
 /*
- * Tuppari JavaScript Library v0.1.0
+ * Tuppari JavaScript Library v0.2.0
  *
  * Copyright 2012, Tuppari.com
  * Released under the MIT licence.
@@ -268,7 +268,7 @@
   Socket.prototype._open = function () {
     var self = this;
 
-    GET(self.url + '/endpoint', function (err, xhr) {
+    GET(self.url + '/endpoint?_t=' + new Date().getTime(), function (err, xhr) {
       if (err) return self.emit('error', err);
 
       var wsUrl = xhr.responseText;
@@ -420,6 +420,12 @@
     self.socket = new Socket(self.applicationId, self.url);
     self.firstConnect = true;
 
+    // Flash socket swf location.
+    if (WebSocket.__isFlashImplementation) {
+      exports.WEB_SOCKET_SWF_LOCATION = options.flashsocketSwfLocation || "http://cdn.tuppari.com/flashsocket/WebSocketMainInsecure.swf";
+      WebSocket.__initialize();
+    }
+
     self.socket.on('connect', function () {
       self.emit('log', 'connected');
 
@@ -525,7 +531,7 @@
    * GET request to specified URL
    */
   function GET(url, callback) {
-    var xhr = new XMLHttpRequest();
+    var xhr = (window.XDomainRequest ? new XDomainRequest() : new XMLHttpRequest());
 
     xhr.onload = function (event) {
       callback(null, xhr);
@@ -555,6 +561,8 @@
   function createClient(options) {
     return new Client(options);
   }
+
+  exports.WEB_SOCKET_DISABLE_AUTO_INITIALIZATION = true;
 
   exports.tuppari = {
     createClient: createClient,
