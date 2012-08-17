@@ -1,6 +1,6 @@
 # Tuppari
 
-This is repository contains Tuppari Command Line Interface and Node.js client library.
+This repository contains the Tuppari Command Line Interface and Node.js client library.
 
 [![Build Status](https://secure.travis-ci.org/hakobera/tuppari.png)](http://travis-ci.org/hakobera/tuppari)
 
@@ -8,7 +8,7 @@ This is repository contains Tuppari Command Line Interface and Node.js client li
 
 * [Node.js](http://nodejs.org/) (>= 0.6.13)
 * gcc
-    * If you are using Mac OS X and XCode 4.3+, you'll need to [Command Line Tools for XCode](https://developer.apple.com/downloads).
+    * If you are using Mac OS X and XCode 4.3+, you'll also need [Command Line Tools for XCode](https://developer.apple.com/downloads).
 
 ## Installation
 
@@ -26,7 +26,7 @@ npm install -g tuppari
 
 ## Documentation
 
-Documentation is available on [Documentation Wiki](https://github.com/hakobera/tuppari/wiki)
+Documentation is available on the [Documentation Wiki](https://github.com/hakobera/tuppari/wiki)
 
 ## Demos
 
